@@ -76,46 +76,129 @@ class Malloc_Library:
     
     def __len__(self):
         # --- YOUR CODE STARTS HERE
-        pass  # remove when starting implementation 
+        count = 0
+        curr = self.head
+        while curr is not None:
+            count += 1
+            curr = curr.next
+        return count 
 
-    
     def __setitem__(self, pos, value):
         # --- YOUR CODE STARTS HERE
-        pass  # remove when starting implementation 
-
+        curr = self.head
+        curr_idx = 0
+        if self.head is None or pos < 0:
+            raise IndexError("Index out of range")
+        while curr is not None and curr_idx < pos:
+            curr = curr.next
+            curr_idx += 1  
+        if curr is None:
+            raise IndexError("Index out of range")
+        curr.value = value 
 
     def __getitem__(self, pos):
         # --- YOUR CODE STARTS HERE
-        pass  # remove when starting implementation 
+        if self.head is None or pos < 0:
+            raise IndexError("Index out of range")
+        curr = self.head
+        curr_idx = 0
+        while curr is not None and curr_idx < pos:
+            curr = curr.next
+            curr_idx += 1 
+        if curr is None:
+            raise IndexError("Index out of range")   
+        return curr.value
     
 
     def malloc(self, size):
         # --- YOUR CODE STARTS HERE
-        pass  # remove when starting implementation 
-
+        self.free()
+        if size <= 0:
+            return
+        self.head = Node(None)
+        curr = self.head
+        count = 1
+        while count < size:
+            curr.next = Node(None)
+            curr = curr.next
+            count += 1
 
     def calloc(self, size):
         # --- YOUR CODE STARTS HERE
-        pass  # remove when starting implementation 
-
+        self.free()
+        if size <= 0:
+            return
+        self.head = Node(0)
+        curr = self.head
+        count = 1
+        while count < size:
+            curr.next = Node(0)
+            curr = curr.next
+            count += 1
 
     def free(self):
         # --- YOUR CODE STARTS HERE
-        pass  # remove when starting implementation 
-
+        curr = self.head
+        self.head = None
+        while curr is not None:
+            nxt = curr.next
+            curr.next = None
+            curr = nxt
 
     def realloc(self, size):
         # --- YOUR CODE STARTS HERE
-        pass  # remove when starting implementation 
-
-
+        if size == 0:
+            self.free()
+            return
+        if self.head is None:
+            self.malloc(size)
+            return
+        current_size = len(self)
+        if size > current_size:
+            curr = self.head
+            while curr.next is not None:
+                curr = curr.next
+            count = current_size
+            while count < size:
+                curr.next = Node(None)
+                curr = curr.next
+                count += 1
+        elif size < current_size:
+            curr = self.head
+            count = 1
+            while count < size:
+                curr = curr.next
+                count += 1 
+            to_remove = curr.next
+            curr.next = None
+            while to_remove is not None:
+                nxt = to_remove.next
+                to_remove.next = None
+                to_remove = nxt 
 
     def memcpy(self, ptr1_start_idx, pointer_2, ptr2_start_idx, size):
         # --- YOUR CODE STARTS HERE
-        pass  # remove when starting implementation 
+        size_1 = len(self)
+        size_2 = len(pointer_2)
+        if (size_1 == 0 or size_2 == 0 or ptr1_start_idx < 0 or ptr1_start_idx >= size_1 or ptr2_start_idx < 0 or ptr2_start_idx >= size_2 or size <= 0):
+            return
+        src_curr = self.head
+        idx1 = 0
+        while src_curr is not None and idx1 < ptr1_start_idx:
+            src_curr = src_curr.next
+            idx1 += 1
+        dest_curr = pointer_2.head
+        idx2 = 0
+        while dest_curr is not None and idx2 < ptr2_start_idx:
+            dest_curr = dest_curr.next
+            idx2 += 1
+        copied = 0
+        while src_curr is not None and dest_curr is not None and copied < size:
+            dest_curr.value = src_curr.value
+            src_curr = src_curr.next
+            dest_curr = dest_curr.next
+            copied += 1
     
-
-
 def run_tests():
     import doctest
     doctest.testmod(verbose=True)
